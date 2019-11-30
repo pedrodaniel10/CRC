@@ -8,13 +8,11 @@ from statistics import mean
 BINS = 1
 
 
-
 # Prints degree distribution properties
 def print_degree_dist_props(histogram):
     print("Results:")
     print("Mean:", round(histogram.mean, 2))
     print("Variance:", round(histogram.var, 2))
-
 
 
 # Calculates best fit power-law lambda
@@ -27,11 +25,9 @@ def calc_best_fit(xs, ys):
     return round(result.alpha, 1)
 
 
-
 # Plots best fit power laws for probability distribution
 def plot_best_fit(x, alpha, lambda_val):
     plt.plot(x, alpha*x**-lambda_val, "-")
-
 
 
 # Plots degree distribution from igraph.Histogram
@@ -50,16 +46,15 @@ def plot_degree_dist(histogram):
 
     # Plot out-degree distribution
     plt.plot(xs, ys_norm, marker=".", linestyle="", markersize=2)
-    
-    return xs, ys
 
+    return xs, ys
 
 
 # Calculates out-degree distribution
 def calc_out_degree(graph):
     print("Calculating out-degree distribution...")
     plt.figure()
-    
+
     histogram = graph.degree_distribution(BINS, mode=OUT)
     xs, ys = plot_degree_dist(histogram)
 
@@ -74,7 +69,6 @@ def calc_out_degree(graph):
 
     alpha1 = 15
     alpha2 = 4*10**5
-
 
     first_plot_lim_x = xs[30:147]
     sec_plot_lim_x = xs[147:-100]
@@ -94,7 +88,6 @@ def calc_out_degree(graph):
     print_degree_dist_props(histogram)
 
 
-
 # Calculates in-degree distribution
 def calc_in_degree(graph):
     print("Calculating in-degree distribution...")
@@ -108,12 +101,12 @@ def calc_in_degree(graph):
     best_fit_y = ys[100:]
 
     lambda1 = calc_best_fit(best_fit_x, best_fit_y)
-    
+
     alpha = 6
 
     plot_lim_x = xs[14:1170]
     plot_best_fit(plot_lim_x, alpha, lambda1)
-    
+
     plt.annotate(xy=[36, 0.00018], s="λ=" + str(lambda1))
 
     # Scales and labels
@@ -124,7 +117,6 @@ def calc_in_degree(graph):
     plt.show()
 
     print_degree_dist_props(histogram)
-
 
 
 # Calculates total degree distribution
@@ -165,13 +157,11 @@ def calc_total_degree(graph):
     print_degree_dist_props(histogram)
 
 
-
 # Calculates graph assortativity degree
 def calc_assort_degree(graph):
     print("Calculating assortativity degree...")
     result = graph.assortativity_degree()
     print("Result:", result)
-
 
 
 def calc_clustering(graph, n_nodes, n_edges):
@@ -187,8 +177,10 @@ def calc_clustering(graph, n_nodes, n_edges):
 
     largest_scc_nodes = largest_scc.vcount()
     largest_scc_edges = largest_scc.ecount()
-    print("Nodes in largest SCC", largest_scc_nodes, "(" + str(round(largest_scc_nodes/n_nodes, 3)) + ")")
-    print("Edges in largest SCC", largest_scc_edges, "(" + str(round(largest_scc_edges/n_edges, 3)) + ")")
+    print("Nodes in largest SCC", largest_scc_nodes,
+          "(" + str(round(largest_scc_nodes/n_nodes, 3)) + ")")
+    print("Edges in largest SCC", largest_scc_edges,
+          "(" + str(round(largest_scc_edges/n_edges, 3)) + ")")
 
     print("Calculating WCC...")
     wcc = graph.components(mode="WEAK")
@@ -196,9 +188,10 @@ def calc_clustering(graph, n_nodes, n_edges):
 
     largest_wcc_nodes = largest_wcc.vcount()
     largest_wcc_edges = largest_wcc.ecount()
-    print("Nodes in largest WCC", largest_wcc_nodes, "(" + str(round(largest_wcc_nodes/n_nodes, 3)) + ")")
-    print("Edges in largest WCC", largest_wcc_edges, "(" + str(round(largest_wcc_edges/n_edges, 3)) + ")")
-
+    print("Nodes in largest WCC", largest_wcc_nodes,
+          "(" + str(round(largest_wcc_nodes/n_nodes, 3)) + ")")
+    print("Edges in largest WCC", largest_wcc_edges,
+          "(" + str(round(largest_wcc_edges/n_edges, 3)) + ")")
 
 
 def calc_short_path(graph):
@@ -209,30 +202,3 @@ def calc_short_path(graph):
     print("Calculating average path length...")
     warnings.warn("long computation", Warning)
     print("Result:", graph.average_path_length())
-
-
-
-# MAIN
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("dataset")
-    args = parser.parse_args()
-
-    # Read graph
-    graph = Graph.Read(args.dataset, "edgelist")
-    n_nodes = graph.vcount()
-    n_edges = graph.ecount()
-    
-    # Calculate degree distributions
-    calc_out_degree(graph)
-    calc_in_degree(graph)
-    calc_total_degree(graph)
-
-    # Calculate graph assortativity degree
-    calc_assort_degree(graph)
-    
-    # Calculate clustering properties
-    calc_clustering(graph, n_nodes, n_edges)
-    
-    # Calculate shortest path measures
-    calc_short_path(graph)
