@@ -56,3 +56,8 @@ dkms.conf
 
 # Datasets
 higgs-*.edgelist
+project2/src/__pycache__/
+
+project2/src/input/
+
+*.png
