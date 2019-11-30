@@ -29,5 +29,8 @@ if __name__ == '__main__':
 
     elif args.dataset == "input/higgs-activity_time.txt":
         activity_list = parse_activity_time(args.dataset)
-        activity_list = build_activated_users(activity_list)
-        plot_activated_users(activity_list)
+        
+        activated_users = build_activated_users(activity_list)
+        plot_activated_users(activated_users)
+
+        plot_activity_psec(activity_list)
