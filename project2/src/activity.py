@@ -50,24 +50,19 @@ def get_closest_index(value, list):
 
 
 
-def plot_infection_function(xs, ys_frac, starting_date, ending_date, activation_rate, color):
+def plot_new_model_function(xs, ys_frac, starting_date, ending_date, activation_rate):
     period_index1 = get_closest_index(starting_date, xs)
     period_index2 = get_closest_index(ending_date, xs)
 
     period_lims = xs[period_index1:period_index2]
     initial_fraction = ys_frac[period_index1]
 
-    plt.plot(period_lims, [1 - (1 - initial_fraction) * math.exp(-activation_rate*(xi - starting_date)) for xi in period_lims], "--", color=color)
+    plt.plot(period_lims, [1 - (1 - initial_fraction) * math.exp(-activation_rate*(xi - starting_date)) for xi in period_lims], "--", color="r")
 
 
 
-# Plots activated users graphic
-def plot_activated_users(activated_users):
+def plot_new_model_fit(xs, ys_frac):
     plt.figure()
-
-    xs = [(activated_user.timestamp - activated_users[0].timestamp)/(60*60*24) for activated_user in activated_users]
-    ys = range(1,len(activated_users)+1)
-    ys_frac = [float(i)/(len(activated_users)+1) for i in ys]
 
     plt.plot(xs, ys_frac, marker=".", linestyle="", markersize=5)
 
@@ -75,26 +70,26 @@ def plot_activated_users(activated_users):
     period_start = 0
     period_end = 0.62
     activation_rate = 0.0032
-    plot_infection_function(xs, ys_frac, period_start, period_end, activation_rate, "r")
+    plot_new_model_function(xs, ys_frac, period_start, period_end, activation_rate)
 
 
     # Period II
     period_start = 0.62
     period_end = 1.51
     activation_rate = 0.0168
-    plot_infection_function(xs, ys_frac, period_start, period_end, activation_rate, "r")
+    plot_new_model_function(xs, ys_frac, period_start, period_end, activation_rate)
     
     # Period III
     period_start = 1.51
     period_end = 3.21
     activation_rate = 0.0642
-    plot_infection_function(xs, ys_frac, period_start, period_end, activation_rate, "r")
+    plot_new_model_function(xs, ys_frac, period_start, period_end, activation_rate)
     
     # Period IV
     period_start = 3.21
     period_end = 7
     activation_rate = 1.3843
-    plot_infection_function(xs, ys_frac, period_start, period_end, activation_rate, "r")
+    plot_new_model_function(xs, ys_frac, period_start, period_end, activation_rate)
 
     # Draw vertical lines
     plt.axvline(x=0.62, color="k", linestyle=":")
@@ -106,7 +101,7 @@ def plot_activated_users(activated_users):
     plt.annotate(xy=[0.89, 10**-5], s="Period II", size=9)
     plt.annotate(xy=[2.14, 10**-5], s="Period III", size=9)
     plt.annotate(xy=[4.85, 10**-5], s="Period IV", size=9)
-    
+
     plt.annotate(xy=[0.16, 3*10**-4], s="    " + "0.192" + "\nusers/min", size=6)
     plt.annotate(xy=[0.87, 3.3*10**-3], s="    " + "1.008" + "\nusers/min", size=6)
     plt.annotate(xy=[2.06, 2.1*10**-2], s="    " + "3.852" + "\nusers/min", size=6)
@@ -119,7 +114,85 @@ def plot_activated_users(activated_users):
     plt.xlim(xmin=0, xmax=7)
     
     plt.show()
+    
 
+
+def plot_si_function(xs, ys_frac, starting_date, ending_date, activation_rate, avg_degree):
+    
+    period_index1 = get_closest_index(starting_date, xs)
+    period_index2 = get_closest_index(ending_date, xs)
+
+    period_lims = xs[period_index1:period_index2]
+    initial_fraction = ys_frac[period_index1]
+
+    tau = (activation_rate*avg_degree)**-1
+
+    plt.plot(period_lims, [initial_fraction*math.exp(xi/tau) for xi in period_lims], "--", color="r")
+
+
+
+def plot_si_fit(xs, ys_frac):
+    plt.figure()
+
+    plt.plot(xs, ys_frac, marker=".", linestyle="", markersize=5)
+
+    avg_degree = 32.53
+
+    # Period I
+    period_start = 0
+    period_end = 0.62
+    activation_rate = 0.32
+    plot_si_function(xs, ys_frac, period_start, period_end, activation_rate, avg_degree)
+
+
+    # Period II
+    period_start = 0.62
+    period_end = 1.51
+    activation_rate = 0.037
+    plot_si_function(xs, ys_frac, period_start, period_end, activation_rate, avg_degree)
+    
+    # Period III
+    period_start = 1.51
+    period_end = 3.21
+    activation_rate = 0.017
+    plot_si_function(xs, ys_frac, period_start, period_end, activation_rate, avg_degree)
+    
+    # Period IV
+    period_start = 3.21
+    period_end = 7
+    activation_rate = 0.01
+    plot_si_function(xs, ys_frac, period_start, period_end, activation_rate, avg_degree)
+
+    # Draw vertical lines
+    plt.axvline(x=0.62, color="k", linestyle=":")
+    plt.axvline(x=1.51, color="k", linestyle=":")
+    plt.axvline(x=3.21, color="k", linestyle=":")
+
+    # Annotations
+    plt.annotate(xy=[0.16, 10**-5], s="Period I", size=9)
+    plt.annotate(xy=[0.89, 10**-5], s="Period II", size=9)
+    plt.annotate(xy=[2.14, 10**-5], s="Period III", size=9)
+    plt.annotate(xy=[4.85, 10**-5], s="Period IV", size=9)
+    
+
+    plt.yscale("log")
+    plt.xlabel("Days from 1st July 2012")
+    plt.ylabel("Fraction of activated users")
+    plt.xlim(xmin=0, xmax=7)
+    
+    plt.show()
+
+
+
+# Plots activated users graphic
+def plot_activated_users(activated_users):
+
+    xs = [(activated_user.timestamp - activated_users[0].timestamp)/(60*60*24) for activated_user in activated_users]
+    ys = range(1,len(activated_users)+1)
+    ys_frac = [float(i)/(len(activated_users)+1) for i in ys]
+
+    plot_si_fit(xs, ys_frac)
+    plot_new_model_fit(xs, ys_frac)
 
 
 def plot_actions_psec(actions_list, line_style):
