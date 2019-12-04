@@ -56,6 +56,7 @@ dkms.conf
 
 # Datasets
 higgs-*.edgelist
+higgs-*.txt
 project2/src/__pycache__/
 
 project2/src/input/

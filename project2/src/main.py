@@ -16,6 +16,8 @@ if __name__ == '__main__':
         graph = Graph.Read(args.dataset, "edgelist")
         n_nodes = graph.vcount()
         n_edges = graph.ecount()
+        print(f"Nodes: {n_nodes}")
+        print(f"Edges: {n_edges}")
 
         # Calculate degree distributions
         socl.calc_out_degree(graph)
@@ -35,6 +37,8 @@ if __name__ == '__main__':
         graph = Graph.Read(args.dataset, "edgelist")
         n_nodes = graph.vcount()
         n_edges = graph.ecount()
+        print(f"Nodes: {n_nodes}")
+        print(f"Edges: {n_edges}")
 
         # Calculate degree distributions
         rply.calc_out_degree(graph)
@@ -54,6 +58,8 @@ if __name__ == '__main__':
         graph = Graph.Read(args.dataset, "edgelist")
         n_nodes = graph.vcount()
         n_edges = graph.ecount()
+        print(f"Nodes: {n_nodes}")
+        print(f"Edges: {n_edges}")
 
         # Calculate degree distributions
         rtt.calc_out_degree(graph)
@@ -73,6 +79,8 @@ if __name__ == '__main__':
         graph = Graph.Read(args.dataset, "edgelist")
         n_nodes = graph.vcount()
         n_edges = graph.ecount()
+        print(f"Nodes: {n_nodes}")
+        print(f"Edges: {n_edges}")
 
         # Calculate degree distributions
         ment.calc_out_degree(graph)

@@ -13,10 +13,7 @@ for i in range(0, len(coreness)):
     vertexes[i] = coreness[i]
 
 # sort
-vertexes = collections.OrderedDict(
-    sorted(vertexes.items(), key=lambda kv: kv[1]))
-
-vertexes = list(vertexes.keys())
+vertexes = sorted(vertexes, key=vertexes.get, reverse=False)
 
 # Set vertexes color
 pal = RainbowPalette(n=max(coreness)+1)  # n=max(coreness))
@@ -24,19 +21,19 @@ pal = RainbowPalette(n=max(coreness)+1)  # n=max(coreness))
 for v in graph.vs:
     v["color"] = pal.get(coreness[v.index])
     if graph.degree(v.index) <= 19:
-        v["size"] = 15
+        v["size"] = 32
     elif graph.degree(v.index) <= 76:
-        v["size"] = 20
+        v["size"] = 24
     elif graph.degree(v.index) <= 304:
-        v["size"] = 25
+        v["size"] = 20
     elif graph.degree(v.index) <= 1216:
-        v["size"] = 30
+        v["size"] = 15
     elif graph.degree(v.index) <= 4864:
-        v["size"] = 35
+        v["size"] = 12
     elif graph.degree(v.index) <= 19456:
-        v["size"] = 40
+        v["size"] = 10
     else:
-        v["size"] = 45
+        v["size"] = 6
 
 
 shells = list(set(coreness))
@@ -52,7 +49,7 @@ for item in coreness:
 
 for shell in shells:
     print(f"Calculating {shell} from {len(shells)-1}")
-    v = 1 - ((shell) / max(shells))
+    v = (1 - ((shell) / max(shells)))
     nodes_in_shell = frequency[shell]
     angles = []
     angle = 0
