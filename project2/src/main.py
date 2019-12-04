@@ -34,3 +34,5 @@ if __name__ == '__main__':
         plot_activated_users(activated_users)
 
         plot_activity_psec(activity_list)
+
+        plot_activity_density(activity_list)

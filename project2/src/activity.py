@@ -8,6 +8,7 @@ import datetime
 import math
 
 BINS = 1
+MAIN_EVENT_TIME = 1341360000
 
 class Activity:
     def __init__(self, userA, userB, timestamp, interaction):
@@ -45,6 +46,15 @@ def build_activated_users(activity_list):
 
 
 
+def get_first_index_from_time(time_value, activity_list):
+    index = 0
+    for activity in activity_list:
+        index+=1
+        if activity.timestamp >= time_value:
+            return index
+
+
+
 def get_closest_index(value, list):
     return min(range(len(list)), key=lambda i: abs(list[i]-value))
 
@@ -57,7 +67,8 @@ def plot_new_model_function(xs, ys_frac, starting_date, ending_date, activation_
     period_lims = xs[period_index1:period_index2]
     initial_fraction = ys_frac[period_index1]
 
-    plt.plot(period_lims, [1 - (1 - initial_fraction) * math.exp(-activation_rate*(xi - starting_date)) for xi in period_lims], "--", color="r")
+    plt.plot(period_lims, [1 - (1 - initial_fraction) * \
+        math.exp(-activation_rate*(xi - starting_date)) for xi in period_lims], "--", color="r")
 
 
 
@@ -242,5 +253,140 @@ def plot_activity_psec(activity_list):
     plt.xlabel("Days from 1st July 2012")
     plt.ylabel("# of interactions / sec")
     plt.xlim(xmin=0, xmax=7)
+
+    plt.show()
+
+
+
+def plot_active_user_density(activity_list):
+    xs = []
+    ys = []
+    
+    time_interval = 1800
+    cur_time = MAIN_EVENT_TIME
+
+    main_event_list = activity_list[get_first_index_from_time(cur_time, activity_list): \
+    get_first_index_from_time(cur_time + 180000, activity_list)]
+    
+    n_active = 0
+    activated_users = {}
+
+    for activity in main_event_list:
+        if activity.timestamp < (cur_time + time_interval):
+            if  activity.userA not in activated_users:
+                n_active += 1
+                activated_users[activity.userA] = 1
+            
+        else:
+            xs.append(cur_time)
+            ys.append(n_active)
+            cur_time = cur_time + time_interval
+            n_active = 0
+            activated_users = {}
+    
+    xs = [(xi - xs[0])/(60*60) for xi in xs]
+
+    activated_users_list = build_activated_users(activity_list)
+    ys_frac = [float(i)/(len(activated_users_list)+1) for i in ys]
+
+    plt.plot(xs, ys_frac, marker="x", linestyle="", markersize=5)
+
+
+
+def plot_deact_function(xs, starting_date, ending_date, cur_density, cur_activation, deact_rate, tau, activity_list):
+    
+    period_index1 = get_closest_index(starting_date, xs)
+    period_index2 = get_closest_index(ending_date, xs)
+    period_lims = xs[period_index1:period_index2+1]
+
+    ys = [cur_density]
+
+    for xi in period_lims[1:]:
+        cur_activation = (1 - 1/tau)*cur_activation
+        cur_density = (1 - deact_rate)*cur_density + (1 - cur_density)*cur_activation
+        ys.append(cur_density)
+    
+    period_lims = [(xi - xs[0])/(60*60) for xi in period_lims]
+
+    plt.plot(period_lims, ys, "--", color="r")
+
+
+
+def plot_deact_fit(activity_list):
+    xs = range(MAIN_EVENT_TIME, MAIN_EVENT_TIME + 180000, 3600)
+
+    # Period I
+    period_start = MAIN_EVENT_TIME + 11*1800
+    period_end = MAIN_EVENT_TIME + 10*3600
+    cur_density = 0.0207
+
+    deact_rate = 0.533
+    cur_activation = 0.063
+    tau = 2.69
+    plot_deact_function(xs, period_start, period_end, cur_density, cur_activation, deact_rate, tau, activity_list)
+    plt.annotate(xy=[0.5, 0.045], s="Period I:\nβ={0}\nλ={1}\nτ={2}".format(deact_rate, cur_activation, tau), size=8)
+    
+    # Period II
+    period_start = MAIN_EVENT_TIME + 10*3600
+    period_end = MAIN_EVENT_TIME + 23*3600
+    cur_density = 0.0236
+
+    deact_rate = 0.197984
+    cur_activation = 0.009019
+    tau = 4.451927
+    plot_deact_function(xs, period_start, period_end, cur_density, cur_activation, deact_rate, tau, activity_list)
+    plt.annotate(xy=[10, 0.045], s="Period II:\nβ={0}\nλ={1}\nτ={2}".format(deact_rate, cur_activation, tau), size=8)
+
+    # Period III
+    period_start = MAIN_EVENT_TIME + 23*3600
+    period_end = MAIN_EVENT_TIME + 27*3600
+    cur_density = 0.00540
+
+    deact_rate = 0.24
+    cur_activation = 0.0085
+    tau = 1.6
+    plot_deact_function(xs, period_start, period_end, cur_density, cur_activation, deact_rate, tau, activity_list)
+    plt.annotate(xy=[23.5, 0.045], s="Period III:\nβ={0}\nλ={1}\nτ={2}".format(deact_rate, cur_activation, tau), size=8)
+
+    # Period IV
+    period_start = MAIN_EVENT_TIME + 27*3600
+    period_end = MAIN_EVENT_TIME + 34*3600
+    cur_density = 0.00454
+
+    deact_rate = 0.606195
+    cur_activation = 0.005342
+    tau = 10.86089
+    plot_deact_function(xs, period_start, period_end, cur_density, cur_activation, deact_rate, tau, activity_list)
+    plt.annotate(xy=[27.5, 0.045], s="Period IV:\nβ={0}\nλ={1}\nτ={2}".format(deact_rate, cur_activation, tau), size=8)
+
+    # Period V
+    period_start = MAIN_EVENT_TIME + 34*3600
+    period_end = MAIN_EVENT_TIME + 50*3600
+    cur_density = 0.00513
+
+    deact_rate = 0.135945
+    cur_activation = 0.002413
+    tau = 3.700539
+    plot_deact_function(xs, period_start, period_end, cur_density, cur_activation, deact_rate, tau, activity_list)
+    plt.annotate(xy=[34.5, 0.045], s="Period V:\nβ={0}\nλ={1}\nτ={2}".format(deact_rate, cur_activation, tau), size=8)
+
+    # Draw vertical lines
+    plt.axvline(x=9.5, color="k", linestyle=":")
+    plt.axvline(x=23, color="k", linestyle=":")
+    plt.axvline(x=27, color="k", linestyle=":")
+    plt.axvline(x=34, color="k", linestyle=":")
+
+
+
+def plot_activity_density(activity_list):
+    plt.figure()
+    plot_active_user_density(activity_list)
+
+    plot_deact_fit(activity_list)
+
+    plt.xlabel("Time [hours]")
+    plt.ylabel("Density of active users")
+    plt.xlim(xmin=0, xmax=50)
+    plt.ylim(ymin=0)
 
     plt.show()
