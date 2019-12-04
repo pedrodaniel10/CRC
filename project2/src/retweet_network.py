@@ -1,7 +1,8 @@
 from igraph import *
+import argparse
 import numpy as np
-import matplotlib.pyplot as plt
 import warnings
+import matplotlib.pyplot as plt
 from statistics import mean
 
 BINS = 1
@@ -57,25 +58,13 @@ def calc_out_degree(graph):
     histogram = graph.degree_distribution(BINS, mode=OUT)
     xs, ys = plot_degree_dist(histogram)
 
-    # Plot best-fit lines
-    first_best_fit_x = xs[:147]
-    first_best_fit_y = ys[:147]
-    sec_best_fit_x = xs[147:]
-    sec_best_fit_y = ys[147:]
+    lambda1 = calc_best_fit(xs, ys)
 
-    lambda1 = calc_best_fit(first_best_fit_x, first_best_fit_y)
-    lambda2 = calc_best_fit(sec_best_fit_x, sec_best_fit_y)
+    alpha1 = 20
 
-    alpha1 = 15
-    alpha2 = 4*10**5
+    plot_best_fit(xs[10:65], alpha1, lambda1)
 
-    first_plot_lim_x = xs[30:147]
-    sec_plot_lim_x = xs[147:-100]
-    plot_best_fit(first_plot_lim_x, alpha1, lambda1)
-    plot_best_fit(sec_plot_lim_x, alpha2, lambda2)
-
-    plt.annotate(xy=[36, 0.0011], s="λ=" + str(lambda1))
-    plt.annotate(xy=[145, 2*10**-5], s="λ=" + str(lambda2))
+    plt.annotate(xy=[25, 0.0001], s="λ=" + str(lambda1))
 
     # Scales and labels
     plt.yscale("log")
@@ -95,18 +84,13 @@ def calc_in_degree(graph):
     histogram = graph.degree_distribution(BINS, mode=IN)
     xs, ys = plot_degree_dist(histogram)
 
-    # Plot best-fit lines
-    best_fit_x = xs[100:]
-    best_fit_y = ys[100:]
+    lambda1 = calc_best_fit(xs, ys)
 
-    lambda1 = calc_best_fit(best_fit_x, best_fit_y)
+    alpha = 50
 
-    alpha = 6
+    plot_best_fit(xs[10:75], alpha, lambda1)
 
-    plot_lim_x = xs[14:1170]
-    plot_best_fit(plot_lim_x, alpha, lambda1)
-
-    plt.annotate(xy=[36, 0.00018], s="λ=" + str(lambda1))
+    plt.annotate(xy=[25, 0.00018], s="λ=" + str(lambda1))
 
     # Scales and labels
     plt.yscale("log")
@@ -126,25 +110,13 @@ def calc_total_degree(graph):
     histogram = graph.degree_distribution(BINS, mode=ALL)
     xs, ys = plot_degree_dist(histogram)
 
-    # Plot best-fit lines
-    first_best_fit_x = xs[:200]
-    first_best_fit_y = ys[:200]
-    sec_best_fit_x = xs[200:]
-    sec_best_fit_y = ys[200:]
+    lambda1 = calc_best_fit(xs, ys)
 
-    lambda1 = calc_best_fit(first_best_fit_x, first_best_fit_y)
-    lambda2 = calc_best_fit(sec_best_fit_x, sec_best_fit_y)
+    alpha1 = 50
 
-    alpha1 = 80
-    alpha2 = 4.4
+    plot_best_fit(xs[10:75], alpha1, lambda1)
 
-    first_plot_lim_x = xs[40:200]
-    sec_plot_lim_x = xs[200:1800]
-    plot_best_fit(first_plot_lim_x, alpha1, lambda1)
-    plot_best_fit(sec_plot_lim_x, alpha2, lambda2)
-
-    plt.annotate(xy=[25, 0.0015], s="λ=" + str(lambda1))
-    plt.annotate(xy=[155, 2*10**-5], s="λ=" + str(lambda2))
+    plt.annotate(xy=[25, 0.0005], s="λ=" + str(lambda1))
 
     # Scales and labels
     plt.yscale("log")
