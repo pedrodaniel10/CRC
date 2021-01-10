@@ -50,3 +50,15 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# VSCode
+.vscode
+
+# Datasets
+higgs-*.edgelist
+higgs-*.txt
+project2/src/__pycache__/
+
+project2/src/input/
+
+*.png
